@@ -1,17 +1,17 @@
-import gymnasium
 import os
 import sys
 
 sys.path.append(os.pardir)
+import gymnasium
 import modules
 import torch
 
 device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
-env = gymnasium.make("CartPole-v0", render_mode="human")
+env = gymnasium.make("CartPole-v1", render_mode="human")
 q = modules.Q(env.action_space.n, *env.observation_space.shape)
-q.to(device)
 q.eval()
 q.load_state_dict(torch.load("DQN.pth", weights_only=True))
+q.to(device)
 state, _ = env.reset()
 total_reward = 0
 while True:

@@ -30,7 +30,7 @@ for run in range(1, 1 + runs):
     v = modules.V(*env.observation_space.shape)
     optimizer_v = torch.optim.Adam(v.parameters(), lr_v)
     v.to(device)
-    for _ in range(500 * 3000):  #
+    for _ in range(1):  #
         action_batch = []
         done_batch = []
         next_state_batch = []
@@ -52,8 +52,8 @@ for run in range(1, 1 + runs):
             torch.Tensor(numpy.array(next_state_batch)).to(device)) + torch.Tensor(reward_batch).to(device)
         loss_pi = -(target - b) * torch.log(probs_batch[action_batch])
         optimizer_pi.zero_grad()
-        loss_pi.backward(retain_graph=True)
-        loss_v = torch.nn.functional.mse_loss(target, b)
+        loss_pi.mean().backward(retain_graph=True)
+        loss_v = torch.nn.functional.mse_loss(target, b.expand(2, 2))
         optimizer_v.zero_grad()
         loss_v.backward()
         optimizer_pi.step()
