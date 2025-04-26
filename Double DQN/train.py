@@ -13,7 +13,7 @@ batch_size = 32
 buffer_size = 100000
 device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
 env = gymnasium.make("CartPole-v1", render_mode="human")
-episodes = 750
+episodes = 1500
 annealing_num_steps = episodes // 2
 epsilon_end = 0.1
 epsilon_init = 1.0

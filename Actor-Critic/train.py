@@ -50,7 +50,7 @@ for run in range(1, 1 + runs):
                 break
             state = next_state
         reward_history[episode] += (total_reward - reward_history[episode]) / run
-    # torch.save(pi.state_dict(), f"Actor-Critic.pth")
+    torch.save(pi.state_dict(), f"Actor-Critic.pth")
 env.close()
 pyplot.plot(reward_history)
 pyplot.xlabel("Episode")
