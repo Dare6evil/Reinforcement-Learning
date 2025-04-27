@@ -13,14 +13,15 @@ batch_size = 32
 buffer_size = 100000
 device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
 env = gymnasium.make("CartPole-v1", render_mode="human")
-episodes = 1500
+episodes = 1000
 annealing_num_steps = episodes // 2
 epsilon_end = 0.1
 epsilon_init = 1.0
 gamma = 0.98
 lr = 0.0005
+# max_total_reward = 0
 reward_history = [0] * episodes
-runs = 1
+runs = 5
 sync_interval = 20
 for run in range(1, 1 + runs):
     epsilon = epsilon_init
@@ -32,6 +33,7 @@ for run in range(1, 1 + runs):
     replay_buffer = data.ReplayBuffer(buffer_size)
     state, _ = env.reset()
     for episode in range(episodes):
+        print(episode)
         total_reward = 0
         while True:
             if epsilon < numpy.random.rand():
@@ -54,8 +56,8 @@ for run in range(1, 1 + runs):
                     (1 - torch.Tensor(numpy.array(done_batch)).to(device))
                     * gamma
                     * q_target(
-                        torch.Tensor(numpy.array(next_state_batch)).to(device).detach()
-                    )[numpy.arange(batch_size), q_batch.argmax(1)]
+                        torch.Tensor(numpy.array(next_state_batch)).to(device)
+                    ).detach()[numpy.arange(batch_size), q_batch.argmax(1)]
                     + torch.Tensor(reward_batch).to(device),
                     q_batch[numpy.arange(batch_size), action_batch],
                 )
@@ -70,10 +72,14 @@ for run in range(1, 1 + runs):
         epsilon = max(
             epsilon - (epsilon_init - epsilon_end) / annealing_num_steps, epsilon_end
         )
+        # if max_total_reward < total_reward:
+        #     max_total_reward = total_reward
+        #     torch.save(q.state_dict(), "Double DQN.pth")
+        # elif max_total_reward == total_reward:
+        #     torch.save(q.state_dict(), "Double DQN.pth")
         if not episode % sync_interval:
             q_target.load_state_dict(q.state_dict())
         reward_history[episode] += (total_reward - reward_history[episode]) / run
-    # torch.save(q.state_dict(), "Double DQN.pth")
 env.close()
 pyplot.plot(reward_history)
 pyplot.xlabel("Episode")

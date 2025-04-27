@@ -10,13 +10,13 @@ import torch
 
 device = torch.device("cpu" if not torch.cuda.is_available() else "cuda:0")
 env = gymnasium.make("CartPole-v1", render_mode="human")
-episodes = 1500
+episodes = 1000
 gamma = 0.98
 lr_pi = 0.0002
 lr_v = 0.0005
-n = 0
+# max_total_reward = 0
 reward_history = [0] * episodes
-runs = 1
+runs = 5
 for run in range(1, 1 + runs):
     pi = modules.Policy(env.action_space.n, *env.observation_space.shape)
     optimizer_pi = torch.optim.Adam(pi.parameters(), lr_pi)
@@ -34,8 +34,8 @@ for run in range(1, 1 + runs):
             next_state, reward, terminated, truncated, _ = env.step(action)
             done = terminated or truncated
             target = (1 - done) * gamma * v(
-                torch.Tensor(next_state).to(device).detach()
-            ) + reward
+                torch.Tensor(next_state).to(device)
+            ).detach() + reward
             loss_pi = -(target - b) * torch.log(probs[action])
             optimizer_pi.zero_grad()
             loss_pi.backward(retain_graph=True)
@@ -49,8 +49,12 @@ for run in range(1, 1 + runs):
                 state, _ = env.reset()
                 break
             state = next_state
+        # if max_total_reward < total_reward:
+        #     max_total_reward = total_reward
+        #     torch.save(pi.state_dict(), f"Actor-Critic.pth")
+        # elif max_total_reward == total_reward:
+        #     torch.save(pi.state_dict(), f"Actor-Critic.pth")
         reward_history[episode] += (total_reward - reward_history[episode]) / run
-    torch.save(pi.state_dict(), f"Actor-Critic.pth")
 env.close()
 pyplot.plot(reward_history)
 pyplot.xlabel("Episode")
