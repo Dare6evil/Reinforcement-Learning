@@ -33,7 +33,6 @@ for run in range(1, 1 + runs):
     replay_buffer = data.ReplayBuffer(buffer_size)
     state, _ = env.reset()
     for episode in range(episodes):
-        print(episode)
         total_reward = 0
         while True:
             if epsilon < numpy.random.rand():
