@@ -15,9 +15,9 @@ class PER:
 
     def sample(self, batch_size):
         delta = numpy.array([args[-1] for args in self.buffer])
-        buffer_batch = [self.buffer[i] for i in
+        buffer_batch = [self.buffer[i][:-1] for i in
                         numpy.random.choice(len(self.buffer), batch_size, p=delta / delta.sum())]
-        return [[buffer_batch[i][j] for i in range(batch_size)] for j in range(5)]
+        return zip(*buffer_batch)
 
 
 class ReplayBuffer:
