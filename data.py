@@ -14,10 +14,11 @@ class PER:
         self.buffer.append(args)
 
     def sample(self, batch_size):
-        delta = numpy.array([args[-1] for args in self.buffer])
-        buffer_batch = [self.buffer[i][:-1] for i in
-                        numpy.random.choice(len(self.buffer), batch_size, p=delta / delta.sum())]
-        return zip(*buffer_batch)
+        delta = numpy.array([self.buffer[i][-1] for i in range(len(self.buffer))])
+        batch_mask = numpy.random.choice(
+            len(self.buffer), batch_size, p=delta / delta.sum()
+        )
+        return zip(*[self.buffer[batch_mask[i]][:-1] for i in range(len(batch_mask))])
 
 
 class ReplayBuffer:
