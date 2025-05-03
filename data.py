@@ -18,7 +18,7 @@ class PER:
         batch_mask = numpy.random.choice(
             len(self.buffer), batch_size, p=delta / delta.sum()
         )
-        return zip(*[self.buffer[batch_mask[i]][:-1] for i in range(len(batch_mask))])
+        return zip(*[self.buffer[batch_mask[i]][:-1] for i in range(batch_size)])
 
 
 class ReplayBuffer:
