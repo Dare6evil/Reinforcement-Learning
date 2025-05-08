@@ -1,6 +1,20 @@
 import torch
 
 
+class DeterministicPolicy(torch.nn.Module):
+    def __init__(self, action_size, state_size):
+        super().__init__()
+        self.pi = torch.nn.Sequential(
+            torch.nn.Linear(state_size, 128),
+            torch.nn.ReLU(),
+            torch.nn.Linear(128, action_size),
+        )
+
+    def forward(self, x):
+        pi = self.pi(x)
+        return pi
+
+
 class DuelingQ(torch.nn.Module):
     def __init__(self, action_size, state_size):
         super().__init__()
