@@ -65,7 +65,7 @@ for run in range(1, 1 + runs):
                 loss_pi = -q(
                     torch.cat(
                         (
-                            pi(torch.Tensor(numpy.array(next_state_batch)).to(device)),
+                            pi(torch.Tensor(numpy.array(state_batch)).to(device)),
                             torch.Tensor(numpy.array(state_batch)).to(device),
                         ),
                         1,
